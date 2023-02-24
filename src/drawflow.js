@@ -181,8 +181,6 @@ export default class Drawflow {
     click(e) {
         this.dispatch('click', e);
         
-        console.log('this.editor_mode', this.editor_mode);
-
         if (this.editor_mode === 'fixed') {
             //return false;
             e.preventDefault();
@@ -475,11 +473,11 @@ export default class Drawflow {
         if (this.connection === true) {
             if (ele_last.classList[0] === 'input') {
                 // Fix connection;
-                var input_id = ele_last.parentElement.parentElement.id;
-                var input_class = ele_last.classList[1];
+                let input_id = ele_last.parentElement.parentElement.id;
+                let input_class = ele_last.classList[1];
 
-                var output_id = this.ele_selected.parentElement.parentElement.id;
-                var output_class = this.ele_selected.classList[1];
+                let output_id = this.ele_selected.parentElement.parentElement.id;
+                let output_class = this.ele_selected.classList[1];
 
                 if (output_id !== input_id && input_class !== false) {
 
@@ -490,26 +488,36 @@ export default class Drawflow {
                         this.connection_ele.classList.add("node_out_" + output_id);
                         this.connection_ele.classList.add(output_class);
                         this.connection_ele.classList.add(input_class);
-                        var id_input = input_id.slice(5);
-                        var id_output = output_id.slice(5);
+                        let id_input = input_id.slice(5);
+                        let id_output = output_id.slice(5);
 
-                        this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].connections.push({
-                            "node": id_input,
-                            "output": input_class
-                        });
-                        this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].connections.push({
-                            "node": id_output,
-                            "input": output_class
-                        });
-                        this.updateConnectionNodes('node-' + id_output);
-                        this.updateConnectionNodes('node-' + id_input);
-                        this.dispatch('connectionCreated', {
-                            output_id: id_output,
-                            input_id: id_input,
-                            output_class: output_class,
-                            input_class: input_class
-                        });
+                        // Check type before connecting
+                        let from = this.drawflow.drawflow[this.module].data[id_output].outputs[output_class];
+                        let to = this.drawflow.drawflow[this.module].data[id_input].inputs[input_class];
+                        
+                        if(from['type'] != to['type']) {
+                            this.connection_ele.remove();
+                            toastr.error(`Datatype between <b>${from['title']} (${from['type']}) != ${to['title']} (${to['type']})</b>`);
+                        } else {
 
+                            this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].connections.push({
+                                "node": id_input,
+                                "output": input_class
+                            });
+                            this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].connections.push({
+                                "node": id_output,
+                                "input": output_class
+                            });
+
+                            this.updateConnectionNodes('node-' + id_output);
+                            this.updateConnectionNodes('node-' + id_input);
+                            this.dispatch('connectionCreated', {
+                                output_id: id_output,
+                                input_id: id_input,
+                                output_class: output_class,
+                                input_class: input_class
+                            });
+                        }
                     } else {
                         this.dispatch('connectionCancel', true);
                         this.connection_ele.remove();
@@ -576,7 +584,6 @@ export default class Drawflow {
 
     key(e) {
         this.dispatch('keydown', e);
-        console.log(this.connection_selected, 'helllo world');
         if (this.editor_mode === 'fixed' || this.editor_mode === 'view') {
             return false;
         }
@@ -1544,7 +1551,6 @@ export default class Drawflow {
         if (this.connection_selected != null) {
             var listclass = this.connection_selected.parentElement.classList;
             this.connection_selected.parentElement.remove();
-            //console.log(listclass);
             var index_out = this.drawflow.drawflow[this.module].data[listclass[2].slice(14)].outputs[listclass[3]].connections.findIndex(function(item, i) {
                 return item.node === listclass[1].slice(13) && item.output === listclass[4]
             });

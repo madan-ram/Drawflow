@@ -541,7 +541,7 @@ export default class Drawflow {
     }
     contextmenu(e) {
         this.dispatch('contextmenu', e);
-        // e.preventDefault();
+        e.preventDefault();
         // Disable contextmenu or mouse right click
         // if (this.editor_mode === 'fixed' || this.editor_mode === 'view') {
         //     return false;

@@ -180,6 +180,9 @@ export default class Drawflow {
 
     click(e) {
         this.dispatch('click', e);
+        
+        console.log('this.editor_mode', this.editor_mode);
+
         if (this.editor_mode === 'fixed') {
             //return false;
             e.preventDefault();
@@ -287,6 +290,8 @@ export default class Drawflow {
                 this.connection_selected.classList.add("selected");
                 const listclassConnection = this.connection_selected.parentElement.classList;
                 if (listclassConnection.length > 1) {
+                    // https://github.com/jerosoler/Drawflow/issues/446 HACK fix
+                    this.container.focus();
                     this.dispatch('connectionSelected', {
                         output_id: listclassConnection[2].slice(14),
                         input_id: listclassConnection[1].slice(13),
@@ -479,7 +484,7 @@ export default class Drawflow {
                 if (output_id !== input_id && input_class !== false) {
 
                     if (this.container.querySelectorAll('.connection.node_in_' + input_id + '.node_out_' + output_id + '.' + output_class + '.' + input_class).length === 0) {
-                        // Conection no exist save connection
+                        // Conection not exist save connection
 
                         this.connection_ele.classList.add("node_in_" + input_id);
                         this.connection_ele.classList.add("node_out_" + output_id);
@@ -536,30 +541,31 @@ export default class Drawflow {
     }
     contextmenu(e) {
         this.dispatch('contextmenu', e);
-        e.preventDefault();
-        if (this.editor_mode === 'fixed' || this.editor_mode === 'view') {
-            return false;
-        }
-        if (this.precanvas.getElementsByClassName("drawflow-delete").length) {
-            this.precanvas.getElementsByClassName("drawflow-delete")[0].remove()
-        };
-        if (this.node_selected || this.connection_selected) {
-            var deletebox = document.createElement('div');
-            deletebox.classList.add("drawflow-delete");
-            deletebox.innerHTML = "x";
-            if (this.node_selected) {
-                this.node_selected.appendChild(deletebox);
+        // e.preventDefault();
+        // Disable contextmenu or mouse right click
+        // if (this.editor_mode === 'fixed' || this.editor_mode === 'view') {
+        //     return false;
+        // }
+        // if (this.precanvas.getElementsByClassName("drawflow-delete").length) {
+        //     this.precanvas.getElementsByClassName("drawflow-delete")[0].remove()
+        // };
+        // if (this.node_selected || this.connection_selected) {
+        //     var deletebox = document.createElement('div');
+        //     deletebox.classList.add("drawflow-delete");
+        //     deletebox.innerHTML = "x";
+        //     if (this.node_selected) {
+        //         this.node_selected.appendChild(deletebox);
 
-            }
-            if (this.connection_selected && (this.connection_selected.parentElement.classList.length > 1)) {
-                deletebox.style.top = e.clientY * (this.precanvas.clientHeight / (this.precanvas.clientHeight * this.zoom)) - (this.precanvas.getBoundingClientRect().y * (this.precanvas.clientHeight / (this.precanvas.clientHeight * this.zoom))) + "px";
-                deletebox.style.left = e.clientX * (this.precanvas.clientWidth / (this.precanvas.clientWidth * this.zoom)) - (this.precanvas.getBoundingClientRect().x * (this.precanvas.clientWidth / (this.precanvas.clientWidth * this.zoom))) + "px";
+        //     }
+        //     if (this.connection_selected && (this.connection_selected.parentElement.classList.length > 1)) {
+        //         deletebox.style.top = e.clientY * (this.precanvas.clientHeight / (this.precanvas.clientHeight * this.zoom)) - (this.precanvas.getBoundingClientRect().y * (this.precanvas.clientHeight / (this.precanvas.clientHeight * this.zoom))) + "px";
+        //         deletebox.style.left = e.clientX * (this.precanvas.clientWidth / (this.precanvas.clientWidth * this.zoom)) - (this.precanvas.getBoundingClientRect().x * (this.precanvas.clientWidth / (this.precanvas.clientWidth * this.zoom))) + "px";
 
-                this.precanvas.appendChild(deletebox);
+        //         this.precanvas.appendChild(deletebox);
 
-            }
+        //     }
 
-        }
+        // }
 
     }
     contextmenuDel() {
@@ -570,10 +576,11 @@ export default class Drawflow {
 
     key(e) {
         this.dispatch('keydown', e);
+        console.log(this.connection_selected, 'helllo world');
         if (this.editor_mode === 'fixed' || this.editor_mode === 'view') {
             return false;
         }
-        if (e.key === 'Delete' || (e.key === 'Backspace' && e.metaKey)) {
+        if (e.key === 'Delete' || (e.key === 'Backspace')) {
             if (this.node_selected != null) {
                 if (this.first_click.tagName !== 'INPUT' && this.first_click.tagName !== 'TEXTAREA' && this.first_click.hasAttribute('contenteditable') !== true) {
                     this.removeNodeId(this.node_selected.id);
@@ -1714,7 +1721,7 @@ export default class Drawflow {
             }
         };
     }
-    export () {
+    export() {
         const dataExport = JSON.parse(JSON.stringify(this.drawflow));
         this.dispatch('export', dataExport);
         return dataExport;

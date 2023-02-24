@@ -192,17 +192,15 @@ cursor: pointer;
 .drawflow .drawflow-node {
   background: var(--background-color);
   border: 1px solid var(--border-color);
-  -webkit-box-shadow: 0 2px 15px 2px var(--border-color);
-  box-shadow: 0 2px 15px 2px var(--border-color);
+  /* -webkit-box-shadow: 0 2px 15px 2px var(--border-color);
+  box-shadow: 0 2px 15px 2px var(--border-color); */
   padding: 0px;
   width: 200px;
 }
 
 .drawflow .drawflow-node.selected  {
   background: white;
-  border: 1px solid #4ea9ff;
-  -webkit-box-shadow: 0 2px 20px 2px #4ea9ff;
-  box-shadow: 0 2px 20px 2px #4ea9ff;
+  box-shadow: 0 0 0 2px #4ea9ff;
 }
 
 .drawflow .drawflow-node.selected .title-box {

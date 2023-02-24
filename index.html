@@ -25,8 +25,8 @@
                 <div class="inputs">
                     {{each(inputId, val) inputs}}
                         <div class="input ${inputId} tooltip">
-                            <span class="title">${val.type}</span>
-                            <span class="text-right">${val.title}</span>
+                            <span class="type">${val.type}</span>
+                            <span class="text-right title">${val.title}</span>
                         </div>
                     {{/each}}
                 </div>
@@ -41,8 +41,9 @@
                 </div>
                 <div class="outputs">
                     {{each(outputId, val) outputs}}
-                        <div class="output ${outputId} tooltip">    
-                            <span class="text-left">${val.title}</span>
+                        <div class="output ${outputId} tooltip">
+                            <span class="type">${val.type}</span>   
+                            <span class="text-left title">${val.title}</span>
                         </div>
                     {{/each}}
                 </div>
@@ -144,6 +145,14 @@
 
         editor.on('nodeMoved', function(id) {
             console.log("Node moved " + id);
+        });
+
+        editor.on('click', function(id) {
+            console.log("clicked " + id);
+        });
+
+        editor.on('connectionSelected', function(id) {
+            console.log("connectionSelected " + id);
         });
 
         editor.on('zoom', function(zoom) {

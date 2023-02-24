@@ -61,13 +61,20 @@
     margin-bottom: 5px;
 }
 
+.drawflow .drawflow-node .input .title,
+.drawflow .drawflow-node .output .title,
+.drawflow .drawflow-node .input .type, 
+.drawflow .drawflow-node .output .type {
+    cursor: default;
+}
+
 .drawflow .drawflow-node .input {
     left: -27px;
     top: 2px;
     background: yellow;
 }
 
-.drawflow .drawflow-node .input .title {
+.drawflow .drawflow-node .input .type {
     left: 1.3rem;
     position: relative;
     top: -2px;
@@ -82,8 +89,8 @@
     top: 2px;
 }
 
-.drawflow .drawflow-node .output .title {
-    right: 2.5rem;
+.drawflow .drawflow-node .output .type {
+    right: 3rem;
     position: relative;
     top: -2px;
 }

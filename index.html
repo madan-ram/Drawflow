@@ -1,370 +1,303 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Drawflow</title>
-</head>
-<body>
-    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
-    <script src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
 
-    <script src="dist/toastr.min.js"></script>
-    <script src="dist/drawflow.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
-    <link rel="stylesheet" type="text/css" href="src/toastr.min.css" />
-    <link rel="stylesheet" type="text/css" href="src/drawflow.css" />
-    <link rel="stylesheet" type="text/css" href="docs/beautiful.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" integrity="sha256-h20CPZ0QyXlBuAw7A+KluUYx/3pK+c7lYEpqLTlxjYQ=" crossorigin="anonymous" />
-    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
-    <script src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
-    
-    <script id="node-tmpl" type="text/html">
-        <div class="parent-node">
-            <div id="node-${nodeId}" class="drawflow-node ${node_class_lst}">
-                <div class="inputs">
-                    {{each(inputId, val) inputs}}
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Drawflow</title>
+    </head>
+
+    <body>
+        <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+        <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+        <script src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+        
+        <script src="dist/toastr.min.js"></script>
+        <script src="dist/drawflow.min.js"></script>
+        <script src="src/block_palette.js"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
+        <link rel="stylesheet" type="text/css" href="src/toastr.min.css" />
+        <link rel="stylesheet" type="text/css" href="src/drawflow.css" />
+        <link rel="stylesheet" type="text/css" href="docs/beautiful.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" integrity="sha256-h20CPZ0QyXlBuAw7A+KluUYx/3pK+c7lYEpqLTlxjYQ=" crossorigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+        <script src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
+
+        <script id="node-tmpl" type="text/html">
+            <div class="parent-node">
+                <div id="node-${nodeId}" class="drawflow-node ${node_class_lst}">
+                    <div class="inputs">
+                        {{each(inputId, val) inputs}}
                         <div class="input ${inputId} tooltip">
                             <span class="type">${val.type}</span>
                             <span class="text-right title">${val.title}</span>
                         </div>
-                    {{/each}}
-                </div>
-                <div class="node-content">
-                    <div class="title"> <span class="icon"></span><span class="title_text"></span></div>
-                    <div class="body">
+                        {{/each}}
+                    </div>
+                    <div class="node-content">
+                        <div class="title"> <span class="icon"></span><span class="title_text"></span></div>
+                        <div class="body">
 
+                        </div>
+                        <div id="footer" style="height: 2rem; padding-top: 2rem;">
+                            <span style="top: 25%; left: 88%; position: relative; width: 1rem; display: inline-block; height: 1rem; box-shadow: 0 0 10px red; background-color: red; border-radius: 1rem;"></span>
+                        </div>
                     </div>
-                    <div id="footer" style="height: 32px">
-                        <span style="top: 25%; left: 88%; position: relative; width: 1rem; display: inline-block; height: 1rem; box-shadow: 0 0 10px red; background-color: red; border-radius: 1rem;"></span>
-                    </div>
-                </div>
-                <div class="outputs">
-                    {{each(outputId, val) outputs}}
+                    <div class="outputs">
+                        {{each(outputId, val) outputs}}
                         <div class="output ${outputId} tooltip">
-                            <span class="type">${val.type}</span>   
+                            <span class="type">${val.type}</span>
                             <span class="text-left title">${val.title}</span>
                         </div>
-                    {{/each}}
+                        {{/each}}
+                    </div>
+                </div>
+            </div>
+        </script>
+
+        <header>
+            <h2>Drawflow</h2>
+        </header>
+        <div id="block_palette" class="wrapper">
+            <div class="col" v-html="update_palette">
+                
+            </div>
+            <div class="col-right">
+                <div class="menu">
+                    <ul>
+                        <li onclick="editor.changeModule('Home'); changeModule(event);" class="selected">Home</li>
+                        <!-- <li onclick="editor.changeModule('Other'); changeModule(event);">Other Module</li> -->
+                    </ul>
+                </div>
+                <div id="drawflow" ondrop="drop(event)" ondragover="allowDrop(event)">
+
+                    <!-- <div class="btn-export" onclick="Swal.fire({ title: 'Export',
+                    html: '<pre><code>'+JSON.stringify(editor.export(), null,4)+'</code></pre>'
+                    })">Export</div> -->
+                    <!-- <div class="btn-clear" onclick="editor.clearModuleSelected()">Clear</div> -->
+                    <div id="canvas-ops">
+                        <div class="btn-lock">
+                            <i id="lock" class="fas fa-lock" onclick="editor.editor_mode='fixed'; changeMode('lock');"></i>
+                            <i id="unlock" class="fas fa-lock-open" onclick="editor.editor_mode='edit'; changeMode('unlock');" style="display:none;"></i>
+                        </div>
+                        <div class="bar-zoom">
+                            <i class="fas fa-search-minus" onclick="editor.zoom_out()"></i>
+                            <i class="fas fa-search" onclick="editor.zoom_reset()"></i>
+                            <i class="fas fa-search-plus" onclick="editor.zoom_in()"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </script>
 
-    <header>
-        <h2>Drawflow</h2>
-    </header>
-    <div class="wrapper">
-        <div class="col">
-            <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="facebook">
-                <i class="fab fa-facebook"></i><span> Facebook</span>
-            </div>
-            <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="slack">
-                <i class="fab fa-slack"></i><span> Slack recive message</span>
-            </div>
-            <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="github">
-                <i class="fab fa-github"></i><span> Github Star</span>
-            </div>
-            <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="telegram">
-                <i class="fab fa-telegram"></i><span> Telegram send message</span>
-            </div>
-            <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="aws">
-                <i class="fab fa-aws"></i><span> AWS</span>
-            </div>
-        </div>
-        <div class="col-right">
-            <div class="menu">
-                <ul>
-                    <li onclick="editor.changeModule('Home'); changeModule(event);" class="selected">Home</li>
-                    <!-- <li onclick="editor.changeModule('Other'); changeModule(event);">Other Module</li> -->
-                </ul>
-            </div>
-            <div id="drawflow" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <script>
+            // Create block_palette server
+            const block_palette = block_palette_component.mount('#block_palette');
+            var id = document.getElementById("drawflow");
+            const editor = new Drawflow(id);
+            // editor.reroute = true;
+            // editor.reroute_fix_curvature = true;
+            // editor.force_first_input = false;
 
-                <!-- <div class="btn-export" onclick="Swal.fire({ title: 'Export',
-                html: '<pre><code>'+JSON.stringify(editor.export(), null,4)+'</code></pre>'
-                })">Export</div> -->
-                <!-- <div class="btn-clear" onclick="editor.clearModuleSelected()">Clear</div> -->
-                <div class="btn-lock">
-                    <i id="lock" class="fas fa-lock" onclick="editor.editor_mode='fixed'; changeMode('lock');"></i>
-                    <i id="unlock" class="fas fa-lock-open" onclick="editor.editor_mode='edit'; changeMode('unlock');" style="display:none;"></i>
-                </div>
-                <div class="bar-zoom">
-                    <i class="fas fa-search-minus" onclick="editor.zoom_out()"></i>
-                    <i class="fas fa-search" onclick="editor.zoom_reset()"></i>
-                    <i class="fas fa-search-plus" onclick="editor.zoom_in()"></i>
-                </div>
-            </div>
-        </div>
-    </div>
+            editor.start();
 
-    <script>
+            // Events!
+            editor.on('nodeCreated', function(id) {
+                console.log("Node created " + id);
+            });
 
-        var id = document.getElementById("drawflow");
-        const editor = new Drawflow(id);
-        editor.reroute = true;
-        editor.reroute_fix_curvature = true;
-        // editor.force_first_input = false;
-        
-        editor.start();
+            editor.on('nodeRemoved', function(id) {
+                console.log("Node removed " + id);
+            });
 
-        // Events!
-        editor.on('nodeCreated', function(id) {
-            console.log("Node created " + id);
-        });
+            editor.on('nodeSelected', function(id) {
+                console.log("Node selected " + id);
+            });
 
-        editor.on('nodeRemoved', function(id) {
-            console.log("Node removed " + id);
-        });
+            editor.on('moduleCreated', function(name) {
+                console.log("Module Created " + name);
+            });
 
-        editor.on('nodeSelected', function(id) {
-            console.log("Node selected " + id);
-        });
+            editor.on('moduleChanged', function(name) {
+                console.log("Module Changed " + name);
+            });
 
-        editor.on('moduleCreated', function(name) {
-            console.log("Module Created " + name);
-        });
+            editor.on('connectionCreated', function(connection) {
+                console.log('Connection created');
+                console.log(connection);
+            });
 
-        editor.on('moduleChanged', function(name) {
-            console.log("Module Changed " + name);
-        });
+            editor.on('connectionRemoved', function(connection) {
+                console.log('Connection removed');
+                console.log(connection);
+            });
 
-        editor.on('connectionCreated', function(connection) {
-            console.log('Connection created');
-            console.log(connection);
-        });
+            // editor.on('mouseMove', function(position) {
+            //     console.log('Position mouse x:' + position.x + ' y:'+ position.y);
+            // });
 
-        editor.on('connectionRemoved', function(connection) {
-            console.log('Connection removed');
-            console.log(connection);
-        });
+            editor.on('nodeMoved', function(id) {
+                console.log("Node moved " + id);
+            });
 
-        // editor.on('mouseMove', function(position) {
-        //     console.log('Position mouse x:' + position.x + ' y:'+ position.y);
-        // });
+            editor.on('click', function(id) {
+                console.log("clicked " + id);
+            });
 
-        editor.on('nodeMoved', function(id) {
-            console.log("Node moved " + id);
-        });
+            editor.on('connectionSelected', function(id) {
+                console.log("connectionSelected " + id);
+            });
 
-        editor.on('click', function(id) {
-            console.log("clicked " + id);
-        });
+            editor.on('zoom', function(zoom) {
+                console.log('Zoom level ' + zoom);
+            });
 
-        editor.on('connectionSelected', function(id) {
-            console.log("connectionSelected " + id);
-        });
+            editor.on('translate', function(position) {
+                console.log('Translate x:' + position.x + ' y:' + position.y);
+            });
 
-        editor.on('zoom', function(zoom) {
-            console.log('Zoom level ' + zoom);
-        });
+            editor.on('addReroute', function(id) {
+                console.log("Reroute added " + id);
+            });
 
-        editor.on('translate', function(position) {
-            console.log('Translate x:' + position.x + ' y:'+ position.y);
-        });
+            editor.on('removeReroute', function(id) {
+                console.log("Reroute removed " + id);
+            });
 
-        editor.on('addReroute', function(id) {
-            console.log("Reroute added " + id);
-        });
-
-        editor.on('removeReroute', function(id) {
-            console.log("Reroute removed " + id);
-        });
-
-        var elements = document.getElementsByClassName('drag-drawflow');
-        for (var i = 0; i < elements.length; i++) {
-            elements[i].addEventListener('touchend', drop, false);
-            elements[i].addEventListener('touchmove', positionMobile, false);
-            elements[i].addEventListener('touchstart', drag, false );
-        }
-
-        var mobile_item_selec = '';
-        var mobile_last_move = null;
-     function positionMobile(ev) {
-         mobile_last_move = ev;
-     }
-
-     function allowDrop(ev) {
-            ev.preventDefault();
-        }
-
-        function drag(ev) {
-            if (ev.type === "touchstart") {
-                mobile_item_selec = ev.target.closest(".drag-drawflow").getAttribute('data-node');
-            } else {
-            ev.dataTransfer.setData("node", ev.target.getAttribute('data-node'));
+            var elements = document.getElementsByClassName('drag-drawflow');
+            for (var i = 0; i < elements.length; i++) {
+                elements[i].addEventListener('touchend', drop, false);
+                elements[i].addEventListener('touchmove', positionMobile, false);
+                elements[i].addEventListener('touchstart', drag, false);
             }
-        }
 
-        function drop(ev) {
-            if (ev.type === "touchend") {
-                var parentdrawflow = document.elementFromPoint( mobile_last_move.touches[0].clientX, mobile_last_move.touches[0].clientY).closest("#drawflow");
-                if(parentdrawflow != null) {
-                    addNodeToDrawFlow(mobile_item_selec, mobile_last_move.touches[0].clientX, mobile_last_move.touches[0].clientY);
-                }
-                mobile_item_selec = '';
-            } else {
+            var mobile_item_selec = '';
+            var mobile_last_move = null;
+
+            function positionMobile(ev) {
+                mobile_last_move = ev;
+            }
+
+            function allowDrop(ev) {
                 ev.preventDefault();
-                var data = ev.dataTransfer.getData("node");
-                addNodeToDrawFlow(data, ev.clientX, ev.clientY);
             }
 
-        }
-
-        function addNodeToDrawFlow(name, pos_x, pos_y) {
-            if(editor.editor_mode === 'fixed') {
-                return false;
+            function drag(ev) {
+                if (ev.type === "touchstart") {
+                    mobile_item_selec = ev.target.closest(".drag-drawflow").getAttribute('data-node');
+                } else {
+                    ev.dataTransfer.setData("node", ev.target.getAttribute('data-node'));
+                }
             }
-            pos_x = pos_x * ( editor.precanvas.clientWidth / (editor.precanvas.clientWidth * editor.zoom)) - (editor.precanvas.getBoundingClientRect().x * ( editor.precanvas.clientWidth / (editor.precanvas.clientWidth * editor.zoom)));
-            pos_y = pos_y * ( editor.precanvas.clientHeight / (editor.precanvas.clientHeight * editor.zoom)) - (editor.precanvas.getBoundingClientRect().y * ( editor.precanvas.clientHeight / (editor.precanvas.clientHeight * editor.zoom)));
 
-            let inputs = {};
-            let outputs = {};
-            switch (name) {
-                case 'facebook':
-                    inputs = {};
-                    outputs = {
-                        'chat': {
-                            'title': 'Chat',
-                            'type': 'string'
-                        }
-                    };
-                    editor.addNode('facebook', 'Facebook Message', '<i class="fab fa-facebook"></i>', inputs,  outputs, pos_x, pos_y);
-                    break;
-                case 'slack':
-                    inputs = {
-                        'chat': {
-                            'title': 'Chat',
-                            'type': 'string'
-                        }
-                    };
-                    outputs = {}
-                    editor.addNode('slack', 'Slack chat', '<i class="fab fa-slack"></i>', inputs, outputs, pos_x, pos_y);
-                    break;
-                case 'github':
-                    inputs = {
-                        'repo': {
-                            'title': 'Repo link',
-                            'type': 'string'
-                        }, 
-                        'user': {
-                            'title': 'User',
-                            'type': 'string'
-                        }
-                    };
-                    outputs = {
-                        'status': {
-                            'title': 'Status',
-                            'type': 'bool'
-                        },
-                        'connection': {
-                            'title': 'Connection',
-                            'type': 'object'
-                        }
-                    };
-                    editor.addNode('github', 'Github Stars', '<i class="fab fa-github "></i>', inputs, outputs, pos_x, pos_y);
-                    break;
-                case 'telegram':
-                    inputs = {
-                        'upload_image': {
-                            'title': 'Upload image',
-                            'type': 'img'
-                        }, 
-                        'user': {
-                            'title': 'User',
-                            'type': 'string'
-                        }
-                    };
-                    outputs = {
-                        'status': {
-                            'title': 'Status',
-                            'type': 'bool'
-                        },
-                        'id': {
-                            'title': 'ID',
-                            'type': 'string'
-                        }
-                    };
-                    editor.addNode('telegram', 'Telegram bot', '<i class="fab fa-telegram-plane"></i>', inputs, outputs, pos_x, pos_y);
-                    break;
-                case 'aws':
-                    inputs = {
-                        'key': {
-                            'title': 'Key',
-                            'type': 'string'
-                        }, 
-                        'secrete': {
-                            'title': 'Secrete',
-                            'type': 'string'
-                        },
-                        'region': {
-                            'title': 'Region',
-                            'type': 'string'
-                        }
-                    };
-                    outputs = {
-                        'connection': {
-                            'title': 'Connection',
-                            'type': 'string'
-                        }
-                    };
-                    editor.addNode('aws', 'Aws Save', '<i class="fab fa-aws"></i>', inputs, outputs, pos_x, pos_y);
-                    break;
-                default:
+            function drop(ev) {
+                if (ev.type === "touchend") {
+                    var parentdrawflow = document.elementFromPoint(mobile_last_move.touches[0].clientX, mobile_last_move.touches[0].clientY).closest("#drawflow");
+                    if (parentdrawflow != null) {
+                        addNodeToDrawFlow(mobile_item_selec, mobile_last_move.touches[0].clientX, mobile_last_move.touches[0].clientY);
+                    }
+                    mobile_item_selec = '';
+                } else {
+                    ev.preventDefault();
+                    var data = ev.dataTransfer.getData("node");
+                    addNodeToDrawFlow(data, ev.clientX, ev.clientY);
+                }
+
             }
-        }
 
-    var transform = '';
-    function showpopup(e) {
-        e.target.closest(".drawflow-node").style.zIndex = "9999";
-        e.target.children[0].style.display = "block";
-        //document.getElementById("modalfix").style.display = "block";
+            function addNodeToDrawFlow(block_id, pos_x, pos_y) {
+                if (editor.editor_mode === 'fixed') {
+                    return false;
+                }
+                pos_x = pos_x * (editor.precanvas.clientWidth / (editor.precanvas.clientWidth * editor.zoom)) - (editor.precanvas.getBoundingClientRect().x * (editor.precanvas.clientWidth / (editor.precanvas.clientWidth * editor.zoom)));
+                pos_y = pos_y * (editor.precanvas.clientHeight / (editor.precanvas.clientHeight * editor.zoom)) - (editor.precanvas.getBoundingClientRect().y * (editor.precanvas.clientHeight / (editor.precanvas.clientHeight * editor.zoom)));
 
-        //e.target.children[0].style.transform = 'translate('+translate.x+'px, '+translate.y+'px)';
-        transform = editor.precanvas.style.transform;
-        editor.precanvas.style.transform = '';
-        editor.precanvas.style.left = editor.canvas_x +'px';
-        editor.precanvas.style.top = editor.canvas_y +'px';
-        console.log(transform);
+                let block_info = block_palette.blocks[block_id];
+                let inputs = {};
+                let outputs = {};
+                let block_icon = {};
 
-        //e.target.children[0].style.top  =  -editor.canvas_y - editor.container.offsetTop +'px';
-        //e.target.children[0].style.left  =  -editor.canvas_x  - editor.container.offsetLeft +'px';
-        editor.editor_mode = "fixed";
+                if(block_info.hasOwnProperty('inputs')) {
+                    inputs = block_info['inputs'];
+                }
 
-    }
+                if(block_info.hasOwnProperty('outputs')) {
+                    outputs = block_info['outputs'];
+                }
 
-     function closemodal(e) {
-         e.target.closest(".drawflow-node").style.zIndex = "2";
-         e.target.parentElement.parentElement.style.display  ="none";
-         //document.getElementById("modalfix").style.display = "none";
-         editor.precanvas.style.transform = transform;
-             editor.precanvas.style.left = '0px';
-             editor.precanvas.style.top = '0px';
-            editor.editor_mode = "edit";
-     }
+                if(block_info.hasOwnProperty('block_icon')) {
+                    block_icon = block_info['block_icon'];
+                }
 
-        function changeModule(event) {
-            var all = document.querySelectorAll(".menu ul li");
+                editor.addNode(block_id, block_info['block_name'], block_icon, inputs, outputs, pos_x, pos_y);
+
+            }
+
+            // inputs = {
+            //     'private_output': {
+            //         'title': 'output_1',
+            //         'type': ''
+            //     }
+            // };
+            // outputs = {}
+            // output_icon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-filetype-json" viewBox="0 0 16 16">
+            //     <path fill-rule="evenodd" d="M14 4.5V11h-1V4.5h-2A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v9H2V2a2 2 0 0 1 2-2h5.5L14 4.5ZM4.151 15.29a1.176 1.176 0 0 1-.111-.449h.764a.578.578 0 0 0 .255.384c.07.049.154.087.25.114.095.028.201.041.319.041.164 0 .301-.023.413-.07a.559.559 0 0 0 .255-.193.507.507 0 0 0 .084-.29.387.387 0 0 0-.152-.326c-.101-.08-.256-.144-.463-.193l-.618-.143a1.72 1.72 0 0 1-.539-.214 1.001 1.001 0 0 1-.352-.367 1.068 1.068 0 0 1-.123-.524c0-.244.064-.457.19-.639.128-.181.304-.322.528-.422.225-.1.484-.149.777-.149.304 0 .564.05.779.152.217.102.384.239.5.41.12.17.186.359.2.566h-.75a.56.56 0 0 0-.12-.258.624.624 0 0 0-.246-.181.923.923 0 0 0-.37-.068c-.216 0-.387.05-.512.152a.472.472 0 0 0-.185.384c0 .121.048.22.144.3a.97.97 0 0 0 .404.175l.621.143c.217.05.406.12.566.211a1 1 0 0 1 .375.358c.09.148.135.335.135.56 0 .247-.063.466-.188.656a1.216 1.216 0 0 1-.539.439c-.234.105-.52.158-.858.158-.254 0-.476-.03-.665-.09a1.404 1.404 0 0 1-.478-.252 1.13 1.13 0 0 1-.29-.375Zm-3.104-.033a1.32 1.32 0 0 1-.082-.466h.764a.576.576 0 0 0 .074.27.499.499 0 0 0 .454.246c.19 0 .33-.055.422-.164.091-.11.137-.265.137-.466v-2.745h.791v2.725c0 .44-.119.774-.357 1.005-.237.23-.565.345-.985.345a1.59 1.59 0 0 1-.568-.094 1.145 1.145 0 0 1-.407-.266 1.14 1.14 0 0 1-.243-.39Zm9.091-1.585v.522c0 .256-.039.47-.117.641a.862.862 0 0 1-.322.387.877.877 0 0 1-.47.126.883.883 0 0 1-.47-.126.87.87 0 0 1-.32-.387 1.55 1.55 0 0 1-.117-.641v-.522c0-.258.039-.471.117-.641a.87.87 0 0 1 .32-.387.868.868 0 0 1 .47-.129c.177 0 .333.043.47.129a.862.862 0 0 1 .322.387c.078.17.117.383.117.641Zm.803.519v-.513c0-.377-.069-.701-.205-.973a1.46 1.46 0 0 0-.59-.63c-.253-.146-.559-.22-.916-.22-.356 0-.662.074-.92.22a1.441 1.441 0 0 0-.589.628c-.137.271-.205.596-.205.975v.513c0 .375.068.699.205.973.137.271.333.48.589.626.258.145.564.217.92.217.357 0 .663-.072.917-.217.256-.146.452-.355.589-.626.136-.274.205-.598.205-.973Zm1.29-.935v2.675h-.746v-3.999h.662l1.752 2.66h.032v-2.66h.75v4h-.656l-1.761-2.676h-.032Z"/>
+            // </svg>`;
+
+            // editor.addNode('private_output', 'Output', output_icon, inputs, outputs, 0, 0);
+
+            var transform = '';
+
+            function showpopup(e) {
+                e.target.closest(".drawflow-node").style.zIndex = "9999";
+                e.target.children[0].style.display = "block";
+                //document.getElementById("modalfix").style.display = "block";
+
+                //e.target.children[0].style.transform = 'translate('+translate.x+'px, '+translate.y+'px)';
+                transform = editor.precanvas.style.transform;
+                editor.precanvas.style.transform = '';
+                editor.precanvas.style.left = editor.canvas_x + 'px';
+                editor.precanvas.style.top = editor.canvas_y + 'px';
+                console.log(transform);
+
+                //e.target.children[0].style.top  =  -editor.canvas_y - editor.container.offsetTop +'px';
+                //e.target.children[0].style.left  =  -editor.canvas_x  - editor.container.offsetLeft +'px';
+                editor.editor_mode = "fixed";
+
+            }
+
+            function closemodal(e) {
+                e.target.closest(".drawflow-node").style.zIndex = "2";
+                e.target.parentElement.parentElement.style.display = "none";
+                //document.getElementById("modalfix").style.display = "none";
+                editor.precanvas.style.transform = transform;
+                editor.precanvas.style.left = '0px';
+                editor.precanvas.style.top = '0px';
+                editor.editor_mode = "edit";
+            }
+
+            function changeModule(event) {
+                var all = document.querySelectorAll(".menu ul li");
                 for (var i = 0; i < all.length; i++) {
                     all[i].classList.remove('selected');
                 }
-            event.target.classList.add('selected');
-        }
-
-        function changeMode(option) {
-        //console.log(lock.id);
-            if(option == 'lock') {
-                lock.style.display = 'none';
-                unlock.style.display = 'block';
-            } else {
-                lock.style.display = 'block';
-                unlock.style.display = 'none';
+                event.target.classList.add('selected');
             }
 
-        }
+            function changeMode(option) {
+                //console.log(lock.id);
+                if (option == 'lock') {
+                    lock.style.display = 'none';
+                    unlock.style.display = 'block';
+                } else {
+                    lock.style.display = 'block';
+                    unlock.style.display = 'none';
+                }
 
-    </script>
-</body>
+            }
+        </script>
+    </body>
 </html>

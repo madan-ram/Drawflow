@@ -168,6 +168,7 @@ cursor: pointer;
   top: 40px;
   background: var(--background-color);
   background-size: 25px 25px;
+  overflow: auto;
   background-image:
    linear-gradient(to right, #f1f1f1 1px, transparent 1px),
    linear-gradient(to bottom, #f1f1f1 1px, transparent 1px);

@@ -80,7 +80,8 @@
     top: -2px;
 }
 
-.drawflow .drawflow-node .input:not(:first-child) {
+.drawflow .drawflow-node .input:not(:first-child),
+.drawflow .drawflow-node .output:not(:first-child) {
     margin-top: 1rem;
 }
 
@@ -205,3 +206,32 @@
   .tooltip:hover .text-right, .tooltip:hover .text-left {
     visibility: visible;
   }
+
+.node-content .title .icon {
+    display: inline-block;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0.5rem;
+}
+
+.node-content .title .icon svg {
+    height: 1.5rem;
+    width: 1.5rem;
+}
+
+.node-content .title {
+    align-items: center;
+    display: flex;
+}
+
+.node-content .title .title_text {
+    display: inline-block;
+    width: calc(100% - 40px - 25px);
+}
+
+#canvas-ops {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    z-index: 1000;
+}

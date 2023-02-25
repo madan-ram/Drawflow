@@ -1240,71 +1240,49 @@ export default class Drawflow {
     addNode(name, title_text, icon, inputs, outputs, ele_pos_x, ele_pos_y, classoverride=null, typenode=false) {
         let jq_block_tmpl = $('#node-tmpl');
         let context_data = {};
+        let node_id = null;
         if (this.useuuid) {
-            var newNodeId = this.getUuid();
+            node_id = this.getUuid();
         } else {
-            var newNodeId = this.nodeId;
+            node_id = this.nodeId;
         }
-        context_data['nodeId'] = newNodeId;
+        context_data['node_id'] = node_id;
+
         if(classoverride == null) {
             context_data['node_class_lst'] = '';
         } else {
             classoverride = 'private__'+classoverride;
             context_data['node_class_lst'] = classoverride;
         }
-        
-        let new_inputs = {};
-        for (const [key, value] of Object.entries(inputs)) {
-            value['connections'] = [];
-            new_inputs['private__'+key] = value;
-        }
-        context_data['inputs'] = new_inputs;
-
-        let new_outputs = {};
-        for (const [key, value] of Object.entries(outputs)) {
-            value['connections'] = [];
-            new_outputs['private__'+key] = value;
-        }
-        context_data['outputs'] = new_outputs;
 
         let node = jq_block_tmpl.tmpl(context_data);
-        let node_content = node.find('.node-content');
-        let content_body = node_content.find('.body');
-        let content_title = node_content.find('.title');
-
-        content_title.find('.title_text').html(title_text);
-        content_title.find('.icon').html(icon);
-
-        let max_size = Math.max(Object.keys(inputs).length, Object.keys(outputs).length);
-
-        content_body.css({
-            'height': max_size*32+'px',
-        });
 
         node.css({
             'top': ele_pos_y + "px",
             'left': ele_pos_x + "px"
         });
 
-        node.appendTo(this.precanvas)
-
-        var json = {
-            id: newNodeId,
+        node.appendTo(this.precanvas);
+        
+        let node_struct = {
+            id: node_id,
             name: name,
+            title_text: title_text,
+            icon: icon,
             class: classoverride,
             typenode: typenode,
-            inputs: new_inputs,
-            outputs: new_outputs,
+            inputs: inputs,
+            outputs: outputs,
             pos_x: ele_pos_x,
-            pos_y: ele_pos_y,
+            pos_y: ele_pos_y
         }
-        this.drawflow.drawflow[this.module].data[newNodeId] = json;
-        this.dispatch('nodeCreated', newNodeId);
+        this.drawflow.drawflow[this.module].data[node_id] = node_struct;
+        this.dispatch('nodeCreated', node_struct);
         if (!this.useuuid) {
             this.nodeId++;
         }
 
-        return newNodeId;
+        return node_id;
     }
 
     // addNodeImport(dataNode, precanvas) {

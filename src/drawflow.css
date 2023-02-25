@@ -235,3 +235,35 @@
     right: 10px;
     z-index: 1000;
 }
+
+.parent-node .footer .status-indicator {
+    top: 25%;
+    left: 88%;
+    position: relative;
+    width: 1rem;
+    display: inline-block;
+    height: 1rem;
+    border-radius: 1rem;
+}
+
+.parent-node .footer .status-indicator.nil {
+    box-shadow: 0 0 10px gray;
+    background-color: gray;
+}
+
+.parent-node .footer .status-indicator.error {
+    box-shadow: 0 0 10px red;
+    background-color: red;
+}
+
+.parent-node .footer .status-indicator.warning {
+    box-shadow: 0 0 10px gold;
+    background-color: gold;
+}
+
+.parent-node .footer .status-indicator.success {
+    box-shadow: 0 0 10px green;
+    background-color: green;
+}
+
+    

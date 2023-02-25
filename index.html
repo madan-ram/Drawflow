@@ -14,8 +14,11 @@
         <script src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
         
         <script src="dist/toastr.min.js"></script>
-        <script src="dist/drawflow.min.js"></script>
+        <script src="src/block_component.js"></script>
         <script src="src/block_palette.js"></script>
+        <script src="dist/drawflow.min.js"></script>
+        
+        
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
         <link rel="stylesheet" type="text/css" href="src/toastr.min.css" />
@@ -26,34 +29,25 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
         <script src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
 
-        <script id="node-tmpl" type="text/html">
-            <div class="parent-node">
-                <div id="node-${nodeId}" class="drawflow-node ${node_class_lst}">
-                    <div class="inputs">
-                        {{each(inputId, val) inputs}}
-                        <div class="input ${inputId} tooltip">
-                            <span class="type">${val.type}</span>
-                            <span class="text-right title">${val.title}</span>
-                        </div>
-                        {{/each}}
-                    </div>
-                    <div class="node-content">
-                        <div class="title"> <span class="icon"></span><span class="title_text"></span></div>
-                        <div class="body">
+        
+        <!-- <script id="block-component-tmpl" type="text/html">
+            <div class="inputs" v-html="update_inputs">
+            </div>
+            <div class="node-content">
+                <div class="title"> <span class="icon" v-html="icon"></span><span class="title_text" v-html="title_text"></span></div>
+                <div class="body" :style="{'height': block_size+'px' }"></div>
+                <div id="footer" style="height: 2rem; padding-top: 2rem;">
+                    <span class="status-indicator" :class="{ status_color }"></span>
+                </div>
+            </div>
+            <div class="outputs" v-html="update_outputs">
+            </div>
+        </script> -->
 
-                        </div>
-                        <div id="footer" style="height: 2rem; padding-top: 2rem;">
-                            <span style="top: 25%; left: 88%; position: relative; width: 1rem; display: inline-block; height: 1rem; box-shadow: 0 0 10px red; background-color: red; border-radius: 1rem;"></span>
-                        </div>
-                    </div>
-                    <div class="outputs">
-                        {{each(outputId, val) outputs}}
-                        <div class="output ${outputId} tooltip">
-                            <span class="type">${val.type}</span>
-                            <span class="text-left title">${val.title}</span>
-                        </div>
-                        {{/each}}
-                    </div>
+        <script id="node-tmpl" type="text/html">
+            <div class="parent-node">    
+                <div id="node-${node_id}" class="drawflow-node ${node_class_lst}">
+                    <block></block>
                 </div>
             </div>
         </script>
@@ -69,15 +63,9 @@
                 <div class="menu">
                     <ul>
                         <li onclick="editor.changeModule('Home'); changeModule(event);" class="selected">Home</li>
-                        <!-- <li onclick="editor.changeModule('Other'); changeModule(event);">Other Module</li> -->
                     </ul>
                 </div>
                 <div id="drawflow" ondrop="drop(event)" ondragover="allowDrop(event)">
-
-                    <!-- <div class="btn-export" onclick="Swal.fire({ title: 'Export',
-                    html: '<pre><code>'+JSON.stringify(editor.export(), null,4)+'</code></pre>'
-                    })">Export</div> -->
-                    <!-- <div class="btn-clear" onclick="editor.clearModuleSelected()">Clear</div> -->
                     <div id="canvas-ops">
                         <div class="btn-lock">
                             <i id="lock" class="fas fa-lock" onclick="editor.editor_mode='fixed'; changeMode('lock');"></i>
@@ -96,17 +84,17 @@
         <script>
             // Create block_palette server
             const block_palette = block_palette_component.mount('#block_palette');
+            const block = block_component.mount('#drawflow');
+            
             var id = document.getElementById("drawflow");
             const editor = new Drawflow(id);
-            // editor.reroute = true;
-            // editor.reroute_fix_curvature = true;
-            // editor.force_first_input = false;
-
             editor.start();
-
+            
+            
             // Events!
-            editor.on('nodeCreated', function(id) {
-                console.log("Node created " + id);
+            editor.on('nodeCreated', function(node_struct) {
+                // console.log("Node created " + node_struct.id);
+                // console.log(`#node-${node_struct.id}`, block_component, block);
             });
 
             editor.on('nodeRemoved', function(id) {
@@ -232,7 +220,7 @@
                     block_icon = block_info['block_icon'];
                 }
 
-                editor.addNode(block_id, block_info['block_name'], block_icon, inputs, outputs, pos_x, pos_y);
+                editor.addNode(block_id, block_info['block_name'], block_icon, inputs, outputs, pos_x, pos_y, classoverride=block_id);
 
             }
 

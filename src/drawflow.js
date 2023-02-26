@@ -37,6 +37,7 @@ export default class Drawflow {
         this.drawflow = {
             "drawflow": {
                 "Home": {
+                    'block_manager': {},
                     "data": {}
                 }
             }
@@ -481,11 +482,11 @@ export default class Drawflow {
 
                 if (output_id !== input_id && input_class !== false) {
 
-                    if (this.container.querySelectorAll('.connection.node_in_' + input_id + '.node_out_' + output_id + '.' + output_class + '.' + input_class).length === 0) {
+                    if (this.container.querySelectorAll(`.connection.node_in_${input_id}.node_out_${output_id}.${output_class}.${input_class}`).length === 0) {
                         // Conection not exist save connection
 
-                        this.connection_ele.classList.add("node_in_" + input_id);
-                        this.connection_ele.classList.add("node_out_" + output_id);
+                        this.connection_ele.classList.add(`node_in_${input_id}`);
+                        this.connection_ele.classList.add(`node_out_${output_id}`);
                         this.connection_ele.classList.add(output_class);
                         this.connection_ele.classList.add(input_class);
                         let id_input = input_id.slice(5);
@@ -812,7 +813,6 @@ export default class Drawflow {
                 var elemtsearchId = container.querySelector(`#${id_search}`);
 
                 var elemtsearch = elemtsearchId.querySelectorAll('.' + elemsOut[item].classList[4])[0]
-                console.log('adadadaa', elemsOut[item].classList);
 
                 var eX = elemtsearch.offsetWidth / 2 + (elemtsearch.getBoundingClientRect().x - precanvas.getBoundingClientRect().x) * precanvasWitdhZoom;
                 var eY = elemtsearch.offsetHeight / 2 + (elemtsearch.getBoundingClientRect().y - precanvas.getBoundingClientRect().y) * precanvasHeightZoom;
@@ -1239,7 +1239,7 @@ export default class Drawflow {
         });
         return nodes;
     }
-
+    
     addNode(name, title_text, icon, inputs, outputs, ele_pos_x, ele_pos_y, classoverride=null, typenode=false) {
         let jq_block_tmpl = $('#node-tmpl');
         let context_data = {};
@@ -1266,18 +1266,11 @@ export default class Drawflow {
         });
 
         node.appendTo(this.precanvas);
-        
-        for (const [key, value] of Object.entries(inputs)) {
-            value['connections'] = [];
-        }
 
-        for (const [key, value] of Object.entries(outputs)) {
-            value['connections'] = [];
-        }
-
-        const block = Vue.createApp(block_component_tmpl).mount(`#node-${node_id}`);                
-        block.inputs = inputs;
-        block.outputs = outputs;
+        const block = Vue.createApp(block_component_tmpl).mount(`#node-${node_id}`);
+        block.id = node_id;
+        block.addInputs(inputs);
+        block.addOutputs(outputs);
         block.title = title_text;
         block.icon = icon;
         block.typenode = typenode;
@@ -1294,6 +1287,8 @@ export default class Drawflow {
             pos_x: block.pos_x,
             pos_y: block.pos_y
         }
+
+        this.drawflow.drawflow[this.module].block_manager[node_id] = block;
         this.drawflow.drawflow[this.module].data[node_id] = node_struct;
         this.dispatch('nodeCreated', node_struct);
         if (!this.useuuid) {

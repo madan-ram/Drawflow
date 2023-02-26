@@ -19,7 +19,27 @@ const block_component_tmpl = {
         }
     },
     methods: {
-              
+            
+        addInputs(inputs) {
+            for (const [name, input] of Object.entries(inputs)) {
+                input['connections'] = [];
+                this.inputs[`n${this.id}_i${name}`] = input;
+            }
+        },
+    
+        addOutputs(outputs) {
+            for (const [name, output] of Object.entries(outputs)) {
+                output['connections'] = [];
+                this.outputs[`n${this.id}_o${name}`] = output;
+            }
+        },
+    
+        deleteInputByName(name) {
+            delete this.inputs[`n${this.id}_i${name}`];
+        },
+        deleteOutputByName(name) {
+            delete this.outputs[`n${this.id}_o${name}`];
+        }
     },
     computed: {
         update_inputs() {

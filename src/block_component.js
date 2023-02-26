@@ -36,9 +36,13 @@ const block_component_tmpl = {
     
         deleteInputByName(name) {
             delete this.inputs[`n${this.id}_i${name}`];
+            // Delete all the elements which has connection to input name
+            $(`.n${this.id}_i${name}`).remove();
         },
         deleteOutputByName(name) {
             delete this.outputs[`n${this.id}_o${name}`];
+            // Delete all the elements which has connection to input name
+            $(`.n${this.id}_o${name}`).remove();
         }
     },
     computed: {

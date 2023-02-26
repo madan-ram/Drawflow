@@ -5,43 +5,17 @@ const STATUS = {
     'success': 1
 }
 
-const block_component = Vue.createApp({
-    data() {
-        return {
-            title: '',
-        }
-    },
-    computed: {
-        title_text() {
-            return this.title;
-        }
-    }
-});
-
-block_component.component('block', {
-    /*html*/
-    template: `
-        <div class="inputs" v-html="update_inputs">
-        </div>
-        <div class="node-content">
-            <div class="title"> <span class="icon" v-html="icon"></span><span class="title_text" v-html="title_text"></span></div>
-            <div class="body" :style="{'height': block_size+'px' }"></div>
-            <div id="footer" style="height: 2rem; padding-top: 2rem;">
-                <span class="status-indicator" :class="{ status_color }"></span>
-            </div>
-        </div>
-        <div class="outputs" v-html="update_outputs">
-        </div>`,
-
-    props: {
-    },
-
+const block_component_tmpl = {
     data() {
         return {
             id: '',
+            title: '',
+            icon: '',
             inputs: {},
             outputs: {},
-            status: STATUS.nil
+            typenode: false,
+            status: STATUS.nil,
+            name: ''
         }
     },
     methods: {
@@ -86,6 +60,10 @@ block_component.component('block', {
                 return 32;
             }
             return max_size*32;
+        },
+
+        title_text() {
+            return this.title;
         }
     }
-});
+};

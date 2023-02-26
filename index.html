@@ -13,10 +13,11 @@
         <script src="http://code.jquery.com/jquery-latest.min.js"></script>
         <script src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
         
+        <script src="dist/drawflow.min.js"></script>
         <script src="dist/toastr.min.js"></script>
         <script src="src/block_component.js"></script>
         <script src="src/block_palette.js"></script>
-        <script src="dist/drawflow.min.js"></script>
+        
         
         
 
@@ -47,7 +48,17 @@
         <script id="node-tmpl" type="text/html">
             <div class="parent-node">    
                 <div id="node-${node_id}" class="drawflow-node ${node_class_lst}">
-                    <block></block>
+                    <div class="inputs" v-html="update_inputs">
+                    </div>
+                    <div class="node-content">
+                        <div class="title"> <span class="icon" v-html="icon"></span><span class="title_text" v-html="title_text"></span></div>
+                        <div class="body" :style="{'height': block_size+'px' }"></div>
+                        <div class="footer" style="height: 2rem; padding-top: 2rem;">
+                            <span class="status-indicator" :class="status_color"></span>
+                        </div>
+                    </div>
+                    <div class="outputs" v-html="update_outputs">
+                    </div>
                 </div>
             </div>
         </script>
@@ -84,7 +95,6 @@
         <script>
             // Create block_palette server
             const block_palette = block_palette_component.mount('#block_palette');
-            const block = block_component.mount('#drawflow');
             
             var id = document.getElementById("drawflow");
             const editor = new Drawflow(id);
@@ -93,8 +103,7 @@
             
             // Events!
             editor.on('nodeCreated', function(node_struct) {
-                // console.log("Node created " + node_struct.id);
-                // console.log(`#node-${node_struct.id}`, block_component, block);
+                console.log("Node created " + node_struct.id);
             });
 
             editor.on('nodeRemoved', function(id) {
@@ -196,17 +205,17 @@
 
             }
 
-            function addNodeToDrawFlow(block_id, pos_x, pos_y) {
+            function addNodeToDrawFlow(name, pos_x, pos_y) {
                 if (editor.editor_mode === 'fixed') {
                     return false;
                 }
                 pos_x = pos_x * (editor.precanvas.clientWidth / (editor.precanvas.clientWidth * editor.zoom)) - (editor.precanvas.getBoundingClientRect().x * (editor.precanvas.clientWidth / (editor.precanvas.clientWidth * editor.zoom)));
                 pos_y = pos_y * (editor.precanvas.clientHeight / (editor.precanvas.clientHeight * editor.zoom)) - (editor.precanvas.getBoundingClientRect().y * (editor.precanvas.clientHeight / (editor.precanvas.clientHeight * editor.zoom)));
 
-                let block_info = block_palette.blocks[block_id];
+                let block_info = block_palette.blocks[name];
                 let inputs = {};
                 let outputs = {};
-                let block_icon = {};
+                let icon = {};
 
                 if(block_info.hasOwnProperty('inputs')) {
                     inputs = block_info['inputs'];
@@ -216,11 +225,11 @@
                     outputs = block_info['outputs'];
                 }
 
-                if(block_info.hasOwnProperty('block_icon')) {
-                    block_icon = block_info['block_icon'];
+                if(block_info.hasOwnProperty('icon')) {
+                    icon = block_info['icon'];
                 }
 
-                editor.addNode(block_id, block_info['block_name'], block_icon, inputs, outputs, pos_x, pos_y, classoverride=block_id);
+                editor.addNode(name, block_info['block_name'], icon, inputs, outputs, pos_x, pos_y, classoverride=name);
 
             }
 
@@ -237,55 +246,55 @@
 
             // editor.addNode('private_output', 'Output', output_icon, inputs, outputs, 0, 0);
 
-            // var transform = '';
+            var transform = '';
 
-            // function showpopup(e) {
-            //     e.target.closest(".drawflow-node").style.zIndex = "9999";
-            //     e.target.children[0].style.display = "block";
-            //     //document.getElementById("modalfix").style.display = "block";
+            function showpopup(e) {
+                e.target.closest(".drawflow-node").style.zIndex = "9999";
+                e.target.children[0].style.display = "block";
+                //document.getElementById("modalfix").style.display = "block";
 
-            //     //e.target.children[0].style.transform = 'translate('+translate.x+'px, '+translate.y+'px)';
-            //     transform = editor.precanvas.style.transform;
-            //     editor.precanvas.style.transform = '';
-            //     editor.precanvas.style.left = editor.canvas_x + 'px';
-            //     editor.precanvas.style.top = editor.canvas_y + 'px';
-            //     console.log(transform);
+                //e.target.children[0].style.transform = 'translate('+translate.x+'px, '+translate.y+'px)';
+                transform = editor.precanvas.style.transform;
+                editor.precanvas.style.transform = '';
+                editor.precanvas.style.left = editor.canvas_x + 'px';
+                editor.precanvas.style.top = editor.canvas_y + 'px';
+                console.log(transform);
 
-            //     //e.target.children[0].style.top  =  -editor.canvas_y - editor.container.offsetTop +'px';
-            //     //e.target.children[0].style.left  =  -editor.canvas_x  - editor.container.offsetLeft +'px';
-            //     editor.editor_mode = "fixed";
+                //e.target.children[0].style.top  =  -editor.canvas_y - editor.container.offsetTop +'px';
+                //e.target.children[0].style.left  =  -editor.canvas_x  - editor.container.offsetLeft +'px';
+                editor.editor_mode = "fixed";
 
-            // }
+            }
 
-            // function closemodal(e) {
-            //     e.target.closest(".drawflow-node").style.zIndex = "2";
-            //     e.target.parentElement.parentElement.style.display = "none";
-            //     //document.getElementById("modalfix").style.display = "none";
-            //     editor.precanvas.style.transform = transform;
-            //     editor.precanvas.style.left = '0px';
-            //     editor.precanvas.style.top = '0px';
-            //     editor.editor_mode = "edit";
-            // }
+            function closemodal(e) {
+                e.target.closest(".drawflow-node").style.zIndex = "2";
+                e.target.parentElement.parentElement.style.display = "none";
+                //document.getElementById("modalfix").style.display = "none";
+                editor.precanvas.style.transform = transform;
+                editor.precanvas.style.left = '0px';
+                editor.precanvas.style.top = '0px';
+                editor.editor_mode = "edit";
+            }
 
-            // function changeModule(event) {
-            //     var all = document.querySelectorAll(".menu ul li");
-            //     for (var i = 0; i < all.length; i++) {
-            //         all[i].classList.remove('selected');
-            //     }
-            //     event.target.classList.add('selected');
-            // }
+            function changeModule(event) {
+                var all = document.querySelectorAll(".menu ul li");
+                for (var i = 0; i < all.length; i++) {
+                    all[i].classList.remove('selected');
+                }
+                event.target.classList.add('selected');
+            }
 
-            // function changeMode(option) {
-            //     //console.log(lock.id);
-            //     if (option == 'lock') {
-            //         lock.style.display = 'none';
-            //         unlock.style.display = 'block';
-            //     } else {
-            //         lock.style.display = 'block';
-            //         unlock.style.display = 'none';
-            //     }
+            function changeMode(option) {
+                //console.log(lock.id);
+                if (option == 'lock') {
+                    lock.style.display = 'none';
+                    unlock.style.display = 'block';
+                } else {
+                    lock.style.display = 'block';
+                    unlock.style.display = 'none';
+                }
 
-            // }
+            }
         </script>
     </body>
 </html>

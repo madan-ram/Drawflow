@@ -508,6 +508,8 @@ export default class Drawflow {
                                 "node": id_output,
                                 "input": output_class
                             });
+                            console.log('node-' + id_output);
+                            console.log('node-' + id_input);
 
                             this.updateConnectionNodes('node-' + id_output);
                             this.updateConnectionNodes('node-' + id_input);
@@ -810,6 +812,7 @@ export default class Drawflow {
                 var elemtsearchId = container.querySelector(`#${id_search}`);
 
                 var elemtsearch = elemtsearchId.querySelectorAll('.' + elemsOut[item].classList[4])[0]
+                console.log('adadadaa', elemsOut[item].classList);
 
                 var eX = elemtsearch.offsetWidth / 2 + (elemtsearch.getBoundingClientRect().x - precanvas.getBoundingClientRect().x) * precanvasWitdhZoom;
                 var eY = elemtsearch.offsetHeight / 2 + (elemtsearch.getBoundingClientRect().y - precanvas.getBoundingClientRect().y) * precanvasHeightZoom;
@@ -1264,17 +1267,32 @@ export default class Drawflow {
 
         node.appendTo(this.precanvas);
         
+        for (const [key, value] of Object.entries(inputs)) {
+            value['connections'] = [];
+        }
+
+        for (const [key, value] of Object.entries(outputs)) {
+            value['connections'] = [];
+        }
+
+        const block = Vue.createApp(block_component_tmpl).mount(`#node-${node_id}`);                
+        block.inputs = inputs;
+        block.outputs = outputs;
+        block.title = title_text;
+        block.icon = icon;
+        block.typenode = typenode;
+        block.pos_x = ele_pos_x;
+        block.pos_y = ele_pos_y;
+        block.name = name;
+        
         let node_struct = {
             id: node_id,
-            name: name,
-            title_text: title_text,
-            icon: icon,
-            class: classoverride,
-            typenode: typenode,
-            inputs: inputs,
-            outputs: outputs,
-            pos_x: ele_pos_x,
-            pos_y: ele_pos_y
+            name: block.name,
+            inputs: block.inputs,
+            outputs: block.outputs,
+            status: block.status,
+            pos_x: block.pos_x,
+            pos_y: block.pos_y
         }
         this.drawflow.drawflow[this.module].data[node_id] = node_struct;
         this.dispatch('nodeCreated', node_struct);

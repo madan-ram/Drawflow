@@ -15,7 +15,8 @@ const block_component_tmpl = {
             outputs: {},
             typenode: false,
             status: STATUS.nil,
-            name: ''
+            name: '',
+            block_properties: {}
         }
     },
     methods: {
